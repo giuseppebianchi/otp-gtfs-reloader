@@ -1,0 +1,24 @@
+{
+  "name": "check-gtfs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "fs": "^0.0.1-security",
+    "https": "^1.0.0",
+    "jszip": "^3.9.1",
+    "request": "^2.88.2",
+    "zlib": "^1.0.5"
+  },
+  "devDependencies": {
+    "prettier": "^2.7.1"
+  }
+}
