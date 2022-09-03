@@ -19,6 +19,7 @@ const settings = {
     remote: {
         fileUrl: process.env.REMOTE_FILE_URL,
     },
+    cache: false
 };
 
 module.exports = {

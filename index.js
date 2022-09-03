@@ -6,9 +6,9 @@ const config = require("./config").settings;
 // This app allows you to check properties between a local and a remote file
 
 const requestOptions = {
-  headers: {
+  headers: !config.cache ? {
     "Cache-Control": "no-cache",
-  },
+  }: {},
 };
 
 getFiles();
