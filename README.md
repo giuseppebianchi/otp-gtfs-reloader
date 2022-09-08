@@ -10,7 +10,7 @@ LOCAL_FILE_URL=./download/example.zip
 ```
 \
 Other params can be set in `config.js` file.
-###Start application
+### Start application
 ```shell
 npm start
 ```
