@@ -1,7 +1,7 @@
 # Keep Updated
 Check remote file changes to update a local file.
 
-###Configuration
+### Configuration
 
 You need to set environment variables, before starting app, in `.env` file.
 ```shell
