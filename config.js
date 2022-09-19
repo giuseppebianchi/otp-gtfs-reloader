@@ -1,14 +1,14 @@
 require("dotenv").config();
 // TIME
 const EVERY_HOUR = 60 * 60 * 1000;
-const EVERY_60S = 60 * 1000;
+const _EVERY_60S = 60 * 1000;
 
 const settings = {
     logger: {
         steps: true,
         update: true,
     },
-    refreshTime: EVERY_60S,
+    refreshTime: EVERY_HOUR,
     workingHours: {
         start: 7,
         end: 18,

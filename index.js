@@ -1,6 +1,5 @@
 const https = require("https");
 const fs = require("fs");
-const JSZip = require("jszip");
 const config = require("./config").settings;
 
 // This app allows you to check properties between a local and a remote file
@@ -10,6 +9,9 @@ const requestOptions = {
     "Cache-Control": "no-cache",
   }: {},
 };
+
+// check if local file exists
+// if not, skip check and download file
 
 getFiles();
 
