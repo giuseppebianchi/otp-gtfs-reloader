@@ -8,18 +8,22 @@ const settings = {
         steps: true,
         update: true,
     },
-    refreshTime: EVERY_HOUR,
-    workingHours: {
+    refreshTime: _EVERY_60S,
+    workingHours: null /*{
         start: 7,
         end: 18,
-    },
+    }*/,
     local: {
         fileUrl: process.env.LOCAL_FILE_URL,
     },
     remote: {
         fileUrl: process.env.REMOTE_FILE_URL,
     },
-    cache: false
+    cache: false,
+    otp: {
+        hostname: process.env.OTP_URL,
+        routerName: process.env.OTP_ROUTER
+    }
 };
 
 module.exports = {

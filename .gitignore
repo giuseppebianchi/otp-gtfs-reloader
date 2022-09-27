@@ -2,5 +2,5 @@
 node_modules/
 
 .idea
-download/example.zip
+download/gtfs.zip
 */*.DS_Store

@@ -5,26 +5,32 @@ const config = require("./config").settings;
 // This app allows you to check properties between a local and a remote file
 
 const requestOptions = {
-  headers: !config.cache ? {
-    "Cache-Control": "no-cache",
-  }: {},
+  headers: !config.cache
+    ? {
+        "Cache-Control": "no-cache",
+      }
+    : {},
 };
-
-// check if local file exists
-// if not, skip check and download file
 
 getFiles();
 
-setInterval(function () {
-  if (config.workingHours) {
-    const checkTime = new Date();
-    const hours = checkTime.getHours();
-    if (hours < config.workingHours.start || hours > config.workingHours.end) {
-      return;
+setInterval(
+  function () {
+    if (config.workingHours) {
+      const checkTime = new Date();
+      const hours = checkTime.getHours();
+      if (
+        hours < config.workingHours.start ||
+        hours > config.workingHours.end
+      ) {
+        return;
+      }
     }
-  }
-  getFiles();
-}, config.refreshTime, config);
+    getFiles();
+  },
+  config.refreshTime,
+  config
+);
 
 function getFiles() {
   // GET CURRENT LOCAL FILE
@@ -103,7 +109,16 @@ function updateLocalLastModifiedStat(fileUrl, date) {
       return;
     }
     console.log("FILE UPDATED successfully on local folder.");
+
+    // create bundle with downloaded file and map pbf file
+    createBundle();
+
+    // send POST requesto to otp
   });
+}
+
+function createBundle() {
+  console.log("bundle was created");
 }
 
 function logUpdatedRemoteFile(loc, rem) {
