@@ -1,5 +1,7 @@
 const https = require("https");
 const fs = require("fs");
+const JSZip = require("jszip");
+const archiver = require("archiver");
 const config = require("./config").settings;
 
 // This app allows you to check properties between a local and a remote file
@@ -12,6 +14,9 @@ const requestOptions = {
     : {},
 };
 
+// check local gtfs file
+// check local map file
+
 getFiles();
 
 setInterval(
@@ -20,6 +25,7 @@ setInterval(
       const checkTime = new Date();
       const hours = checkTime.getHours();
       if (
+        true ||
         hours < config.workingHours.start ||
         hours > config.workingHours.end
       ) {
@@ -57,6 +63,7 @@ function getFiles() {
           console.log("Remote: ", remoteFileLastModified.toString());
 
         if (
+          true ||
           localFileLastModified.getTime() !== remoteFileLastModified.getTime()
         ) {
           config.logger.steps && console.log("Remote file was updated.");
@@ -118,7 +125,36 @@ function updateLocalLastModifiedStat(fileUrl, date) {
 }
 
 function createBundle() {
-  console.log("bundle was created");
+  try {
+    const zipFile = archiver("zip", { zlib: { level: 9 } });
+
+    zipFile.on("warning", (error) => {
+      console.log("warning:", error);
+    });
+
+    zipFile.on("error", (error) => {
+      console.error("error occurred :", error);
+    });
+
+    const writeStream = fs.createWriteStream(
+      `${config.local.bundleFolder}/bundle_${new Date().getTime()}.zip`
+    );
+    zipFile.pipe(writeStream);
+
+    // Append test file
+    zipFile.append(fs.createReadStream(config.local.fileUrl), {
+      name: "gtfs.zip",
+    });
+
+    // Append another file...
+    zipFile.append(fs.createReadStream(config.local.dataFolder + "/aq.pbf"), {
+      name: "aq.pbf",
+    });
+
+    zipFile.finalize();
+  } catch (e) {
+    console.log("An error occured while zipping bundle folder: ", e);
+  }
 }
 
 function logUpdatedRemoteFile(loc, rem) {

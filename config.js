@@ -9,12 +9,14 @@ const settings = {
         update: true,
     },
     refreshTime: _EVERY_60S,
-    workingHours: null /*{
+    workingHours: {
         start: 7,
         end: 18,
-    }*/,
+    },
     local: {
         fileUrl: process.env.LOCAL_FILE_URL,
+        bundleFolder: process.env.BUNDLE_FOLDER,
+        dataFolder: process.env.DATA_FOLDER
     },
     remote: {
         fileUrl: process.env.REMOTE_FILE_URL,

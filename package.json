@@ -7,14 +7,20 @@
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["OpenTripPlanner", "otp", "open trip planner", "planner", "gtfs"],
+  "keywords": [
+    "OpenTripPlanner",
+    "otp",
+    "open trip planner",
+    "planner",
+    "gtfs"
+  ],
   "author": "Giuseppe Bianchi",
   "license": "ISC",
   "dependencies": {
+    "archiver": "^5.3.1",
     "dotenv": "^16.0.1",
     "fs": "^0.0.1-security",
     "https": "^1.0.0",
-    "jszip": "^3.9.1",
     "request": "^2.88.2",
     "zlib": "^1.0.5"
   },
