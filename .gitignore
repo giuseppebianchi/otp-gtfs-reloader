@@ -2,5 +2,7 @@
 node_modules/
 
 .idea
+bundle/*.zip
+bundle/*.pbf
 download/gtfs.zip
 */*.DS_Store
