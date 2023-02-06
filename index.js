@@ -1,6 +1,5 @@
 const https = require("https");
 const fs = require("fs");
-const JSZip = require("jszip");
 const archiver = require("archiver");
 const config = require("./config").settings;
 
@@ -25,7 +24,6 @@ setInterval(
       const checkTime = new Date();
       const hours = checkTime.getHours();
       if (
-        true ||
         hours < config.workingHours.start ||
         hours > config.workingHours.end
       ) {
@@ -63,7 +61,6 @@ function getFiles() {
           console.log("Remote: ", remoteFileLastModified.toString());
 
         if (
-          true ||
           localFileLastModified.getTime() !== remoteFileLastModified.getTime()
         ) {
           config.logger.steps && console.log("Remote file was updated.");
@@ -119,14 +116,14 @@ function updateLocalLastModifiedStat(fileUrl, date) {
 
     // create bundle with downloaded file and map pbf file
     createBundle();
-
-    // send POST requesto to otp
   });
 }
 
 function createBundle() {
   try {
     const zipFile = archiver("zip", { zlib: { level: 9 } });
+    const bundleName = `bundle_${new Date().getTime()}.zip`;
+    const bundlePath = `${config.local.bundleFolder}/${bundleName}`;
 
     zipFile.on("warning", (error) => {
       console.log("warning:", error);
@@ -136,9 +133,12 @@ function createBundle() {
       console.error("error occurred :", error);
     });
 
-    const writeStream = fs.createWriteStream(
-      `${config.local.bundleFolder}/bundle_${new Date().getTime()}.zip`
-    );
+    zipFile.on("finish", (data) => {
+      console.log("Bundle was created: ", bundleName);
+      reloadOtpGraph(bundlePath);
+    });
+
+    const writeStream = fs.createWriteStream(bundlePath);
     zipFile.pipe(writeStream);
 
     // Append test file
@@ -169,5 +169,7 @@ function logUpdatedRemoteFile(loc, rem) {
 function formatDate(s) {
   return s.replace("GMT", "");
 }
+
+function reloadOtpGraph(bundlePath) {}
 
 //curl -sI https://gssi:GsS120224a4@www.ama.laquila.it/export/GTFS.ZIP | grep -i Last-Modified
