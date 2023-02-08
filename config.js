@@ -23,7 +23,7 @@ const settings = {
     },
     cache: false,
     otp: {
-        hostname: process.env.OTP_URL,
+        hostname: 'http://localhost:8080', //process.env.OTP_URL,
         routerName: process.env.OTP_ROUTER
     }
 };

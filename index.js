@@ -1,5 +1,7 @@
 const https = require("https");
+const http = require("http");
 const fs = require("fs");
+const axios = require("axios");
 const archiver = require("archiver");
 const config = require("./config").settings;
 
@@ -134,8 +136,8 @@ function createBundle() {
     });
 
     zipFile.on("finish", (data) => {
-      console.log("Bundle was created: ", bundleName);
-      reloadOtpGraph(bundlePath);
+      console.log("Bundle was created1: ", bundleName);
+      //setTimeout(() => reloadOtpGraph(bundlePath), 1000);
     });
 
     const writeStream = fs.createWriteStream(bundlePath);
@@ -151,7 +153,10 @@ function createBundle() {
       name: "aq.pbf",
     });
 
-    zipFile.finalize();
+    zipFile.finalize().then(() => {
+      console.log("finalize - ", bundlePath);
+      setTimeout(() => reloadOtpGraph(bundlePath), 1000);
+    });
   } catch (e) {
     console.log("An error occured while zipping bundle folder: ", e);
   }
@@ -170,6 +175,21 @@ function formatDate(s) {
   return s.replace("GMT", "");
 }
 
-function reloadOtpGraph(bundlePath) {}
+async function reloadOtpGraph(bundlePath) {
+  const otpConfig = {
+    method: "post",
+    url: "http://localhost:8080/otp/routers/ama",
+    headers: {
+      "Content-Type": "application/zip",
+    },
+    data: fs.createReadStream(bundlePath),
+  };
 
-//curl -sI https://gssi:GsS120224a4@www.ama.laquila.it/export/GTFS.ZIP | grep -i Last-Modified
+  axios(config)
+    .then(function (response) {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+}
