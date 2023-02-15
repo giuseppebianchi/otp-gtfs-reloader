@@ -4,6 +4,7 @@ const fs = require("fs");
 const axios = require("axios");
 const archiver = require("archiver");
 const config = require("./config").settings;
+const { sendNotification } = require("./mailer");
 
 // This app allows you to check properties between a local and a remote file
 
@@ -26,13 +27,12 @@ setInterval(
       const checkTime = new Date();
       const hours = checkTime.getHours();
       if (
-        hours < config.workingHours.start ||
-        hours > config.workingHours.end
+        hours >= config.workingHours.start &&
+        hours <= config.workingHours.end
       ) {
-        return;
+        getFiles();
       }
     }
-    getFiles();
   },
   config.refreshTime,
   config
@@ -55,7 +55,7 @@ function getFiles() {
 
     // READ REMOTE FILE
     const req = https
-      .get(config.remote.gtfsFile, requestOptions, (res) => {
+      .get(config.remote.fileUrl, requestOptions, (res) => {
         // READ REMOTE FILE Last Modified Date
         // res.headers["last-modified"] -> Thu, 01 Sep 2022 11:15:59 GMT
         const remoteFileLastModified = new Date(res.headers["last-modified"]);
@@ -87,7 +87,8 @@ function callback(options) {
       options.remoteFileLastModified
     );
 
-  // You could send an email as notification
+  // NOTIFICATIONS
+  config.notifications?.emailAlerts && sendNotification(options);
 
   // DOWNLOAD UPDATED FILE
   downloadUpdatedFile(options.res, options.remoteFileLastModified);
@@ -136,7 +137,7 @@ function createBundle() {
     });
 
     zipFile.on("finish", (data) => {
-      console.log("Bundle was created1: ", bundleName);
+      //console.log("Bundle was created1: ", bundleName);
       //setTimeout(() => reloadOtpGraph(bundlePath), 1000);
     });
 
@@ -147,9 +148,7 @@ function createBundle() {
       name: "gtfs.zip",
     });
     zipFile.append(
-      fs.createReadStream(
-        `${config.local.dataFolder}/${config.local.mapFile}`
-      ),
+      fs.createReadStream(`${config.local.dataFolder}/${config.local.mapFile}`),
       {
         name: config.local.mapFile,
       }
@@ -157,7 +156,7 @@ function createBundle() {
 
     zipFile.finalize().then(() => {
       console.log("finalize - ", bundlePath);
-      setTimeout(() => reloadOtpGraph(bundlePath), 1000);
+      setTimeout(() => reloadOtpGraph(bundlePath), 500);
     });
   } catch (e) {
     console.log("An error occured while zipping bundle folder: ", e);
@@ -223,6 +222,6 @@ const server = http.createServer(function (req, res) {
   }
 });
 
-server.listen(5000); //3 - listen for any incoming requests
+server.listen(config.port);
 
 console.log("Node.js web server at port 5000 is running..");
