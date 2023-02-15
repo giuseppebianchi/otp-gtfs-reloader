@@ -8,22 +8,22 @@ const settings = {
         steps: true,
         update: true,
     },
-    refreshTime: _EVERY_60S,
+    refreshTime: EVERY_HOUR,
     workingHours: {
         start: 7,
         end: 18,
     },
     local: {
-        fileUrl: process.env.LOCAL_FILE_URL,
+        gtfsFile: process.env.LOCAL_FILE_PATH,
         bundleFolder: process.env.BUNDLE_FOLDER,
-        dataFolder: process.env.DATA_FOLDER
+        mapFile: process.env.MAP_FILE
     },
     remote: {
         fileUrl: process.env.REMOTE_FILE_URL,
     },
     cache: false,
     otp: {
-        hostname: 'http://localhost:8080', //process.env.OTP_URL,
+        hostname: process.env.OTP_URL,
         routerName: process.env.OTP_ROUTER
     }
 };

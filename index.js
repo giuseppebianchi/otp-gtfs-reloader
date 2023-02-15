@@ -40,7 +40,7 @@ setInterval(
 
 function getFiles() {
   // GET CURRENT LOCAL FILE
-  fs.stat(config.local.fileUrl, "utf8", (err, stats) => {
+  fs.stat(config.local.gtfsFile, "utf8", (err, stats) => {
     if (err) {
       console.log("Local file doesn't exist.");
       console.error(err);
@@ -55,7 +55,7 @@ function getFiles() {
 
     // READ REMOTE FILE
     const req = https
-      .get(config.remote.fileUrl, requestOptions, (res) => {
+      .get(config.remote.gtfsFile, requestOptions, (res) => {
         // READ REMOTE FILE Last Modified Date
         // res.headers["last-modified"] -> Thu, 01 Sep 2022 11:15:59 GMT
         const remoteFileLastModified = new Date(res.headers["last-modified"]);
@@ -96,7 +96,7 @@ function callback(options) {
 function downloadUpdatedFile(res, remoteFileLastModified) {
   // DOWNLOAD FILE AND REPLACE IT
   // Set same local file url to replace it with remote file
-  const DOWNLOAD_FILE_URL = config.local.fileUrl;
+  const DOWNLOAD_FILE_URL = config.local.gtfsFile;
 
   config.logger && console.log("Download started...");
   const newFile = fs.createWriteStream(DOWNLOAD_FILE_URL);
@@ -107,9 +107,9 @@ function downloadUpdatedFile(res, remoteFileLastModified) {
   });
 }
 
-function updateLocalLastModifiedStat(fileUrl, date) {
+function updateLocalLastModifiedStat(gtfsFile, date) {
   // UPDATE LOCAL FILE STATS with remote file stats
-  fs.utimes(fileUrl, date, date, (err) => {
+  fs.utimes(gtfsFile, date, date, (err) => {
     if (err) {
       console.log("Error occurred while updating local file stats.");
       return;
@@ -143,15 +143,17 @@ function createBundle() {
     const writeStream = fs.createWriteStream(bundlePath);
     zipFile.pipe(writeStream);
 
-    // Append test file
-    zipFile.append(fs.createReadStream(config.local.fileUrl), {
+    zipFile.append(fs.createReadStream(config.local.gtfsFile), {
       name: "gtfs.zip",
     });
-
-    // Append another file...
-    zipFile.append(fs.createReadStream(config.local.dataFolder + "/aq.pbf"), {
-      name: "aq.pbf",
-    });
+    zipFile.append(
+      fs.createReadStream(
+        `${config.local.dataFolder}/${config.local.mapFile}`
+      ),
+      {
+        name: config.local.mapFile,
+      }
+    );
 
     zipFile.finalize().then(() => {
       console.log("finalize - ", bundlePath);
@@ -178,7 +180,7 @@ function formatDate(s) {
 async function reloadOtpGraph(bundlePath) {
   const otpConfig = {
     method: "post",
-    url: "http://localhost:8080/otp/routers/ama",
+    url: `${config.otp.hostname}/otp/routers/${config.otp.routerName}`,
     headers: {
       "Content-Type": "application/zip",
     },
@@ -193,3 +195,34 @@ async function reloadOtpGraph(bundlePath) {
       console.log(error);
     });
 }
+
+const server = http.createServer(function (req, res) {
+  if (req.url === "/download-gtfs") {
+    const gtfs = config.local.gtfsFile;
+
+    // Check if the file exists
+    if (fs.existsSync(gtfs)) {
+      // Set the headers for the response
+      res.setHeader("Content-disposition", "attachment; filename=gtfs.zip");
+      res.setHeader("Content-type", "application/zip");
+
+      // Create a read stream from the file
+      const filestream = fs.createReadStream(gtfs);
+      // Pipe the stream to the response object
+      filestream.pipe(res);
+    } else {
+      // Return a 404 error if the file doesn't exist
+      res.writeHead(404, { "Content-Type": "text/plain" });
+      res.write("File not found");
+      res.end();
+    }
+  } else {
+    res.writeHead(404, { "Content-Type": "text/plain" });
+    res.write("Not Found");
+    res.end();
+  }
+});
+
+server.listen(5000); //3 - listen for any incoming requests
+
+console.log("Node.js web server at port 5000 is running..");
