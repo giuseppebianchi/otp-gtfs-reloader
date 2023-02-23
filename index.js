@@ -123,6 +123,7 @@ function updateLocalLastModifiedStat(gtfsFile, date) {
 }
 
 function createBundle() {
+  config.logger.steps && console.log("Creating bundle...")
   try {
     const zipFile = archiver("zip", { zlib: { level: 9 } });
     const bundleName = `bundle_${new Date().getTime()}.zip`;
@@ -155,7 +156,7 @@ function createBundle() {
     );
 
     zipFile.finalize().then(() => {
-      console.log("finalize - ", bundlePath);
+      console.log("Bundle ready - ", bundlePath);
       setTimeout(() => reloadOtpGraph(bundlePath), 500);
     });
   } catch (e) {
@@ -177,6 +178,7 @@ function formatDate(s) {
 }
 
 async function reloadOtpGraph(bundlePath) {
+  config.logger.steps && console.log('Sending bundle to OTP...')
   const otpConfig = {
     method: "post",
     url: `${config.otp.hostname}/otp/routers/${config.otp.routerName}`,
@@ -188,7 +190,8 @@ async function reloadOtpGraph(bundlePath) {
 
   axios(config)
     .then(function (response) {
-      console.log(JSON.stringify(response.data));
+      console.log('Bundle sent to OTP successfully.')
+      //console.log(JSON.stringify(response.data));
     })
     .catch(function (error) {
       console.log(error);
@@ -224,4 +227,4 @@ const server = http.createServer(function (req, res) {
 
 server.listen(config.port);
 
-console.log("Node.js web server at port 5000 is running..");
+console.log(`Node.js web server at port ${config.port} is running..`);
