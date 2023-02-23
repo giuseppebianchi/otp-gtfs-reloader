@@ -6,10 +6,10 @@ const _EVERY_60S = 60 * 1000;
 const settings = {
   port: process.env.PORT,
   logger: {
-    steps: true,
+    steps: false,
     update: true,
   },
-  refreshTime: _EVERY_60S,
+  refreshTime: EVERY_HOUR,
   workingHours: {
     start: 7,
     end: 18,
