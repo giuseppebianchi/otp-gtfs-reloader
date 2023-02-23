@@ -179,9 +179,11 @@ function formatDate(s) {
 
 async function reloadOtpGraph(bundlePath) {
   config.logger.steps && console.log('Sending bundle to OTP...')
+  const url = `${config.otp.hostname}/otp/routers/${config.otp.routerName}`;
+  console.log(url)
   const otpConfig = {
     method: "post",
-    url: `${config.otp.hostname}/otp/routers/${config.otp.routerName}`,
+    url,
     headers: {
       "Content-Type": "application/zip",
     },
