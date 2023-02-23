@@ -200,6 +200,7 @@ async function reloadOtpGraph(bundlePath) {
 
 const server = http.createServer(function (req, res) {
   if (req.url === "/download-gtfs") {
+    config.logger.steps && console.log('GTFS required to download...')
     const gtfs = config.local.gtfsFile;
 
     // Check if the file exists

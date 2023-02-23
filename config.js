@@ -10,10 +10,7 @@ const settings = {
     update: true,
   },
   refreshTime: EVERY_HOUR,
-  workingHours: {
-    start: 7,
-    end: 18,
-  },
+  workingHours: null,
   local: {
     gtfsFile: process.env.LOCAL_FILE_PATH,
     bundleFolder: process.env.BUNDLE_FOLDER,
