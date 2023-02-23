@@ -9,6 +9,7 @@ const settings = {
     steps: true,
     update: true,
   },
+  forceOverwrite: false,
   refreshTime: EVERY_HOUR,
   workingHours: {
     start: 7,

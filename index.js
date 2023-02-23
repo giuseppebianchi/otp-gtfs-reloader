@@ -27,7 +27,7 @@ setInterval(
       const checkTime = new Date();
       const hours = checkTime.getHours();
       if (
-        hours >= config.workingHours.start &&
+        forceOverwrite || hours >= config.workingHours.start &&
         hours <= config.workingHours.end
       ) {
         getFiles();
@@ -179,7 +179,7 @@ function formatDate(s) {
 
 async function reloadOtpGraph(bundlePath) {
   config.logger.steps && console.log('Sending bundle to OTP...')
-  const otpConfig = {
+  const requestOptions = {
     method: "post",
     url: `${config.otp.hostname}/otp/routers/${config.otp.routerName}`,
     headers: {
@@ -188,9 +188,9 @@ async function reloadOtpGraph(bundlePath) {
     data: fs.createReadStream(bundlePath),
   };
 
-  axios(config)
+  axios(requestOptions)
     .then(function (response) {
-      console.log('Bundle sent to OTP successfully.')
+      config.logger.update && console.log('Bundle sent to OTP successfully.')
       //console.log(JSON.stringify(response.data));
     })
     .catch(function (error) {
@@ -200,6 +200,7 @@ async function reloadOtpGraph(bundlePath) {
 
 const server = http.createServer(function (req, res) {
   if (req.url === "/download-gtfs") {
+    config.logger.steps && console.log('GTFS required to download...')
     const gtfs = config.local.gtfsFile;
 
     // Check if the file exists
