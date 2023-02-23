@@ -63,7 +63,7 @@ function getFiles() {
           console.log("Remote: ", remoteFileLastModified.toString());
 
         if (
-          localFileLastModified.getTime() !== remoteFileLastModified.getTime()
+          config.forceOverwrite || localFileLastModified.getTime() !== remoteFileLastModified.getTime()
         ) {
           config.logger.steps && console.log("Remote file was updated.");
           // CALLBACK

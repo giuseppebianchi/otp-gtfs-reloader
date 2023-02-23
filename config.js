@@ -9,6 +9,7 @@ const settings = {
     steps: true,
     update: true,
   },
+  forceOverwrite: true,
   refreshTime: EVERY_HOUR,
   workingHours: null,
   local: {
