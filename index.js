@@ -23,7 +23,7 @@ getFiles();
 
 setInterval(
   function () {
-    if (config.workingHours || config.forceOverwrite) {
+    if (config.workingHours && !config.forceOverwrite) {
       const checkTime = new Date();
       const hours = checkTime.getHours();
       if (
@@ -64,9 +64,9 @@ function getFiles() {
           console.log("Remote: ", remoteFileLastModified.toString());
 
         if (
-          localFileLastModified.getTime() !== remoteFileLastModified.getTime()
+          localFileLastModified.getTime() !== remoteFileLastModified.getTime() || config.forceOverwrite
         ) {
-          config.logger.steps && console.log("Remote file was updated.");
+          !config.forceOverwrite && config.logger.steps && console.log("Remote file was updated.");
           // CALLBACK
           callback({ res, localFileLastModified, remoteFileLastModified });
         }
