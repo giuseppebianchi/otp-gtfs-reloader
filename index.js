@@ -23,16 +23,17 @@ getFiles();
 
 setInterval(
   function () {
-    if (config.workingHours) {
+    if (config.workingHours || config.forceOverwrite) {
       const checkTime = new Date();
       const hours = checkTime.getHours();
       if (
-        forceOverwrite || hours >= config.workingHours.start &&
-        hours <= config.workingHours.end
+        hours < config.workingHours.start ||
+        hours > config.workingHours.end
       ) {
-        getFiles();
+        return;
       }
     }
+    getFiles();
   },
   config.refreshTime,
   config
@@ -123,7 +124,7 @@ function updateLocalLastModifiedStat(gtfsFile, date) {
 }
 
 function createBundle() {
-  config.logger.steps && console.log("Creating bundle...")
+  config.logger.steps && console.log("Creating bundle...");
   try {
     const zipFile = archiver("zip", { zlib: { level: 9 } });
     const bundleName = `bundle_${new Date().getTime()}.zip`;
@@ -178,7 +179,7 @@ function formatDate(s) {
 }
 
 async function reloadOtpGraph(bundlePath) {
-  config.logger.steps && console.log('Sending bundle to OTP...')
+  config.logger.steps && console.log("Sending bundle to OTP...");
   const requestOptions = {
     method: "post",
     url: `${config.otp.hostname}/otp/routers/${config.otp.routerName}`,
@@ -190,7 +191,7 @@ async function reloadOtpGraph(bundlePath) {
 
   axios(requestOptions)
     .then(function (response) {
-      config.logger.update && console.log('Bundle sent to OTP successfully.')
+      config.logger.update && console.log("Bundle sent to OTP successfully.");
       //console.log(JSON.stringify(response.data));
     })
     .catch(function (error) {
@@ -200,7 +201,7 @@ async function reloadOtpGraph(bundlePath) {
 
 const server = http.createServer(function (req, res) {
   if (req.url === "/download-gtfs") {
-    config.logger.steps && console.log('GTFS required to download...')
+    config.logger.steps && console.log("GTFS required to download...");
     const gtfs = config.local.gtfsFile;
 
     // Check if the file exists
