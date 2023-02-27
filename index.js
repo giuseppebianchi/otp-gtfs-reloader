@@ -1,5 +1,4 @@
 const https = require("https");
-const http = require("http");
 const fs = require("fs");
 const axios = require("axios");
 const archiver = require("archiver");
@@ -199,7 +198,7 @@ async function reloadOtpGraph(bundlePath) {
     });
 }
 
-const server = http.createServer(function (req, res) {
+const server = https.createServer(function (req, res) {
   if (req.url === "/download-gtfs") {
     config.logger.steps && console.log("GTFS required to download...");
     const gtfs = config.local.gtfsFile;
