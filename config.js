@@ -11,7 +11,7 @@ const settings = {
   },
   forceOverwrite: false,
   refreshTime: EVERY_HOUR,
-  workingHours: {
+  workingHours: { // UTC
     start: 7,
     end: 18,
   },

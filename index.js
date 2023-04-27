@@ -59,16 +59,24 @@ function getFiles() {
       .get(config.remote.fileUrl, requestOptions, (res) => {
         // READ REMOTE FILE Last Modified Date
         // res.headers["last-modified"] -> Thu, 01 Sep 2022 11:15:59 GMT
-        const remoteFileLastModified = new Date(res.headers["last-modified"]);
-        config.logger.steps &&
-          console.log("Remote: ", remoteFileLastModified.toString());
+        try {
+          const remoteFileLastModified = new Date(res.headers["last-modified"]);
+          config.logger.steps &&
+            console.log("Remote: ", remoteFileLastModified.toString());
 
-        if (
-          localFileLastModified.getTime() !== remoteFileLastModified.getTime() || config.forceOverwrite
-        ) {
-          !config.forceOverwrite && config.logger.steps && console.log("Remote file was updated.");
-          // CALLBACK
-          callback({ res, localFileLastModified, remoteFileLastModified });
+          if (
+            localFileLastModified.getTime() !==
+              remoteFileLastModified.getTime() ||
+            config.forceOverwrite
+          ) {
+            !config.forceOverwrite &&
+              config.logger.steps &&
+              console.log("Remote file was updated.");
+            // CALLBACK
+            callback({ res, localFileLastModified, remoteFileLastModified });
+          }
+        } catch (err) {
+          console.log("Error retriving remote file's date")
         }
       })
       .on("error", (e) => {
